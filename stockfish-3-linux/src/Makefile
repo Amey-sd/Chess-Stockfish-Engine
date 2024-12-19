@@ -50,7 +50,7 @@ OBJS = benchmark.o bitbase.o bitboard.o book.o endgame.o evaluate.o main.o \
 # ----------------------------------------------------------------------------
 #
 # debug = yes/no      --- -DNDEBUG         --- Enable/Disable debug mode
-# optimize = yes/no   --- (-Os/-fast etc.) --- Enable/Disable optimizations
+# optimize = yes/no   --- (-O3/-fast etc.) --- Enable/Disable optimizations
 # arch = (name)       --- (-arch)          --- Target architecture
 # os = (name)         ---                  --- Target operating system
 # bits = 64/32        --- -DIS_64BIT       --- 64-/32-bit operating system
@@ -231,22 +231,22 @@ ifeq ($(COMP),clang)
 endif
 
 ### 3.2 General compiler settings
-CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti -Os $(EXTRACXXFLAGS)
+CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti -O3 $(EXTRACXXFLAGS)
 
 ifeq ($(comp),gcc)
-	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -Os
+	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -O3
 endif
 
 ifeq ($(comp),mingw)
-	CXXFLAGS += -Wextra -Wshadow -Os
+	CXXFLAGS += -Wextra -Wshadow -O3
 endif
 
 ifeq ($(comp),icc)
-	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi -Os
+	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi -O3
 endif
 
 ifeq ($(comp),clang)
-	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -Os
+	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -O3
 endif
 
 ifeq ($(os),osx)
@@ -281,7 +281,7 @@ endif
 ifeq ($(optimize),yes)
 
 	ifeq ($(comp),gcc)
-		CXXFLAGS += -Os
+		CXXFLAGS += -O3
 
 		ifeq ($(os),osx)
 			ifeq ($(arch),i386)
@@ -298,16 +298,16 @@ ifeq ($(optimize),yes)
 	endif
 
 	ifeq ($(comp),mingw)
-		CXXFLAGS += -Os
+		CXXFLAGS += -O3
 	endif
 
 	ifeq ($(comp),icc)
-		CXXFLAGS += -Os
+		CXXFLAGS += -O3
 	endif
 
 	ifeq ($(comp),clang)
 		### -O4 requires a linker that supports LLVM's LTO
-		CXXFLAGS += -Os
+		CXXFLAGS += -O3
 	endif
 endif
 
@@ -425,7 +425,7 @@ profile-build:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_clean)
 
 strip:
-	strip $(EXE)
+	strip --strip-unneeded$(EXE)
 
 install:
 	-mkdir -p -m 755 $(BINDIR)
@@ -487,13 +487,13 @@ gcc-profile-prepare:
 
 gcc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-generate -Os'\
+	EXTRACXXFLAGS='-fprofile-generate -O3'\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
 gcc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-use -Os'\
+	EXTRACXXFLAGS='-fprofile-use -O3'\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
@@ -506,12 +506,12 @@ icc-profile-prepare:
 
 icc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir -Os'\
+	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir -O3'\
 	all
 
 icc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir -Os'\
+	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir -O3'\
 	all
 
 icc-profile-clean:
