@@ -480,14 +480,14 @@ config-sanity:
 	@test "$(comp)" = "gcc" || test "$(comp)" = "icc" || test "$(comp)" = "mingw" || test "$(comp)" = "clang"
 
 $(EXE): $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS) -s
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS) $(EXTRALDFLAGS) -s
 
 gcc-profile-prepare:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) gcc-profile-clean
 
 gcc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-generate -O3 '\
+	EXTRACXXFLAGS='-fprofile-generate'\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
