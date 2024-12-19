@@ -231,22 +231,22 @@ ifeq ($(COMP),clang)
 endif
 
 ### 3.2 General compiler settings
-CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti -O3 $(EXTRACXXFLAGS)
+CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti $(EXTRACXXFLAGS)
 
 ifeq ($(comp),gcc)
-	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -O3
+	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow
 endif
 
 ifeq ($(comp),mingw)
-	CXXFLAGS += -Wextra -Wshadow -O3
+	CXXFLAGS += -Wextra -Wshadow
 endif
 
 ifeq ($(comp),icc)
-	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi -O3
+	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi
 endif
 
 ifeq ($(comp),clang)
-	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -O3
+	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow
 endif
 
 ifeq ($(os),osx)
@@ -302,12 +302,25 @@ ifeq ($(optimize),yes)
 	endif
 
 	ifeq ($(comp),icc)
-		CXXFLAGS += -O3
+		ifeq ($(os),osx)
+			CXXFLAGS += -fast -mdynamic-no-pic
+		else
+			CXXFLAGS += -O3
+		endif
 	endif
 
 	ifeq ($(comp),clang)
 		### -O4 requires a linker that supports LLVM's LTO
 		CXXFLAGS += -O3
+
+		ifeq ($(os),osx)
+			ifeq ($(arch),i386)
+				CXXFLAGS += -mdynamic-no-pic
+			endif
+			ifeq ($(arch),x86_64)
+				CXXFLAGS += -mdynamic-no-pic
+			endif
+		endif
 	endif
 endif
 
@@ -425,7 +438,7 @@ profile-build:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) $(profile_clean)
 
 strip:
-	strip --strip-unneeded$(EXE)
+	strip $(EXE)
 
 install:
 	-mkdir -p -m 755 $(BINDIR)
@@ -480,20 +493,20 @@ config-sanity:
 	@test "$(comp)" = "gcc" || test "$(comp)" = "icc" || test "$(comp)" = "mingw" || test "$(comp)" = "clang"
 
 $(EXE): $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS) -s
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
 
 gcc-profile-prepare:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) gcc-profile-clean
 
 gcc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-generate'\
+	EXTRACXXFLAGS='-fprofile-generate' \
 	EXTRALDFLAGS='-lgcov' \
 	all
 
 gcc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-use -O3 '\
+	EXTRACXXFLAGS='-fprofile-use' \
 	EXTRALDFLAGS='-lgcov' \
 	all
 
@@ -502,16 +515,16 @@ gcc-profile-clean:
 
 icc-profile-prepare:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) icc-profile-clean
-	@mkdir -p profdir
+	@mkdir profdir
 
 icc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir'\
+	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir' \
 	all
 
 icc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir'\
+	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir' \
 	all
 
 icc-profile-clean:
