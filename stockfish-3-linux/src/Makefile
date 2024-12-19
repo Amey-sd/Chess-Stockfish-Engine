@@ -506,12 +506,12 @@ icc-profile-prepare:
 
 icc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir -O3'\
+	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir'\
 	all
 
 icc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir -O3'\
+	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir'\
 	all
 
 icc-profile-clean:
