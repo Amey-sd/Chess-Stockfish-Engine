@@ -231,7 +231,7 @@ ifeq ($(COMP),clang)
 endif
 
 ### 3.2 General compiler settings
-CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti $(EXTRACXXFLAGS)
+CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti -Os$(EXTRACXXFLAGS)
 
 ifeq ($(comp),gcc)
 	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -Os
@@ -242,7 +242,7 @@ ifeq ($(comp),mingw)
 endif
 
 ifeq ($(comp),icc)
-	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi
+	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi -O3
 endif
 
 ifeq ($(comp),clang)
@@ -480,20 +480,20 @@ config-sanity:
 	@test "$(comp)" = "gcc" || test "$(comp)" = "icc" || test "$(comp)" = "mingw" || test "$(comp)" = "clang"
 
 $(EXE): $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS) -s
 
 gcc-profile-prepare:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) gcc-profile-clean
 
 gcc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-generate' \
+	EXTRACXXFLAGS='-fprofile-generate -Os'\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
 gcc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-use' \
+	EXTRACXXFLAGS='-fprofile-use -Os'\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
@@ -502,16 +502,16 @@ gcc-profile-clean:
 
 icc-profile-prepare:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) icc-profile-clean
-	@mkdir profdir
+	@mkdir -p profdir
 
 icc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir' \
+	EXTRACXXFLAGS='-prof-gen=srcpos -prof_dir ./profdir -Os'\
 	all
 
 icc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir' \
+	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir -Os'\
 	all
 
 icc-profile-clean:
