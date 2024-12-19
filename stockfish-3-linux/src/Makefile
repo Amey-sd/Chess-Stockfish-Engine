@@ -480,7 +480,7 @@ config-sanity:
 	@test "$(comp)" = "gcc" || test "$(comp)" = "icc" || test "$(comp)" = "mingw" || test "$(comp)" = "clang"
 
 $(EXE): $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LDFLAGS) $(EXTRALDFLAGS) -s
+	$(CXX) -o $@ $(OBJS) $(LDFLAGS) -s
 
 gcc-profile-prepare:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) gcc-profile-clean
