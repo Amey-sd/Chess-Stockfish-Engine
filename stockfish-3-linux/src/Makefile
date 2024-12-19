@@ -50,7 +50,7 @@ OBJS = benchmark.o bitbase.o bitboard.o book.o endgame.o evaluate.o main.o \
 # ----------------------------------------------------------------------------
 #
 # debug = yes/no      --- -DNDEBUG         --- Enable/Disable debug mode
-# optimize = yes/no   --- (-O3/-fast etc.) --- Enable/Disable optimizations
+# optimize = yes/no   --- (-Os/-fast etc.) --- Enable/Disable optimizations
 # arch = (name)       --- (-arch)          --- Target architecture
 # os = (name)         ---                  --- Target operating system
 # bits = 64/32        --- -DIS_64BIT       --- 64-/32-bit operating system
@@ -242,7 +242,7 @@ ifeq ($(comp),mingw)
 endif
 
 ifeq ($(comp),icc)
-	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi -O3
+	CXXFLAGS += -wd383,981,1418,1419,1476,10187,10188,11505,11503 -Wcheck -Wabi -Wdeprecated -strict-ansi -Os
 endif
 
 ifeq ($(comp),clang)
@@ -281,7 +281,7 @@ endif
 ifeq ($(optimize),yes)
 
 	ifeq ($(comp),gcc)
-		CXXFLAGS += -O3
+		CXXFLAGS += -Os
 
 		ifeq ($(os),osx)
 			ifeq ($(arch),i386)
@@ -298,16 +298,16 @@ ifeq ($(optimize),yes)
 	endif
 
 	ifeq ($(comp),mingw)
-		CXXFLAGS += -O3
+		CXXFLAGS += -Os
 	endif
 
 	ifeq ($(comp),icc)
-		CXXFLAGS += -O3
+		CXXFLAGS += -Os
 	endif
 
 	ifeq ($(comp),clang)
 		### -O4 requires a linker that supports LLVM's LTO
-		CXXFLAGS += -O3
+		CXXFLAGS += -Os
 	endif
 endif
 
