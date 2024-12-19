@@ -487,13 +487,13 @@ gcc-profile-prepare:
 
 gcc-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-generate -O3'\
+	EXTRACXXFLAGS='-fprofile-generate -O3 '\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
 gcc-profile-use:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \
-	EXTRACXXFLAGS='-fprofile-use -O3'\
+	EXTRACXXFLAGS='-fprofile-use -O3 '\
 	EXTRALDFLAGS='-lgcov' \
 	all
 
