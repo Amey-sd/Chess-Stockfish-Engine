@@ -234,11 +234,11 @@ endif
 CXXFLAGS = -g -Wall -Wcast-qual -fno-exceptions -fno-rtti $(EXTRACXXFLAGS)
 
 ifeq ($(comp),gcc)
-	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow
+	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -Os
 endif
 
 ifeq ($(comp),mingw)
-	CXXFLAGS += -Wextra -Wshadow
+	CXXFLAGS += -Wextra -Wshadow -Os
 endif
 
 ifeq ($(comp),icc)
@@ -246,7 +246,7 @@ ifeq ($(comp),icc)
 endif
 
 ifeq ($(comp),clang)
-	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow
+	CXXFLAGS += -ansi -pedantic -Wno-long-long -Wextra -Wshadow -Os
 endif
 
 ifeq ($(os),osx)
@@ -302,25 +302,12 @@ ifeq ($(optimize),yes)
 	endif
 
 	ifeq ($(comp),icc)
-		ifeq ($(os),osx)
-			CXXFLAGS += -fast -mdynamic-no-pic
-		else
-			CXXFLAGS += -O3
-		endif
+		CXXFLAGS += -O3
 	endif
 
 	ifeq ($(comp),clang)
 		### -O4 requires a linker that supports LLVM's LTO
 		CXXFLAGS += -O3
-
-		ifeq ($(os),osx)
-			ifeq ($(arch),i386)
-				CXXFLAGS += -mdynamic-no-pic
-			endif
-			ifeq ($(arch),x86_64)
-				CXXFLAGS += -mdynamic-no-pic
-			endif
-		endif
 	endif
 endif
 
